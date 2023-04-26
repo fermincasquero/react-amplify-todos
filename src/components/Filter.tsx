@@ -4,9 +4,10 @@ interface IProps {
   items: Array<{ name: string; label: string }>;
   selected: string[];
   onChange: (selected: string[]) => void;
+  name: string;
 }
 
-const StatusFilter: React.FC<IProps> = ({ items, onChange, selected }) => {
+const StatusFilter: React.FC<IProps> = ({ items, onChange, selected, name }) => {
   const handleSelectedChange = (name: string) => (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       onChange([...selected, name]);
@@ -25,11 +26,11 @@ const StatusFilter: React.FC<IProps> = ({ items, onChange, selected }) => {
 
   return (
     <fieldset className="mt-4">
-      <legend className="text-base font-semibold leading-6 text-gray-900">Status</legend>
+      <legend className="text-base font-semibold leading-6 text-green-500">{name}</legend>
       <div className="mt-2 divide-y divide-gray-200 border-b border-t border-gray-200">
         <div className="relative flex items-start py-2">
           <div className="min-w-0 flex-1 text-sm leading-6">
-            <label className="select-none font-medium text-gray-900">All</label>
+            <label className="select-none text-gray-900">All</label>
           </div>
           <div className="ml-3 flex h-6 items-center">
             <input
@@ -43,7 +44,7 @@ const StatusFilter: React.FC<IProps> = ({ items, onChange, selected }) => {
         {items.map(({ name, label }) => (
           <div key={name} className="relative flex items-start py-2">
             <div className="min-w-0 flex-1 text-sm leading-6">
-              <label htmlFor={name} className="select-none font-medium text-gray-900">
+              <label htmlFor={name} className="select-none text-gray-900">
                 {label}
               </label>
             </div>

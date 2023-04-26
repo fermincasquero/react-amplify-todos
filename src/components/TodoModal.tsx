@@ -2,23 +2,27 @@ import { FormEventHandler, Fragment, useState } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import XMarkIcon from "@heroicons/react/24/solid/XMarkIcon";
 import { DataStore } from "@aws-amplify/datastore";
-import { Todo } from "../models";
+import { Category, Todo } from "../models";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  categories: Category[];
 }
 
-const TodoModal: React.FC<Props> = ({ open, onClose }) => {
+const TodoModal: React.FC<Props> = ({ open, onClose, categories }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<string>("");
 
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     try {
-      const newTodo = await DataStore.save(new Todo({ name, description, status: "UNFINISHED" }));
+      const newTodo = await DataStore.save(
+        new Todo({ name, description, status: "UNFINISHED", todoCategoryId: category })
+      );
 
       if (newTodo) {
         setName("");
@@ -73,18 +77,40 @@ const TodoModal: React.FC<Props> = ({ open, onClose }) => {
                     </Dialog.Title>
                     <div className="mt-4">
                       <form id="add-todo-form" onSubmit={handleSubmit}>
-                        <div className="mt-2">
-                          <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
-                            Name
-                          </label>
-                          <div className="mt-2 w-full">
-                            <input
-                              name="name"
-                              id="name"
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
-                              className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                            />
+                        <div className="mt-2 flex flex-row space-x-4">
+                          <div className="flex flex-1 flex-col">
+                            <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
+                              Name
+                            </label>
+                            <div className="mt-2 w-full">
+                              <input
+                                name="name"
+                                id="name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="flex flex-1 flex-col">
+                            <label htmlFor="description" className="block text-sm font-medium leading-6 text-gray-900">
+                              Category
+                            </label>
+                            <div className="mt-2">
+                              <select
+                                id="location"
+                                name="location"
+                                className="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                                defaultValue="Canada"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                              >
+                                {categories.map(({ name, id }) => (
+                                  <option value={id}>{name}</option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         </div>
 

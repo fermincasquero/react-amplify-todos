@@ -1,10 +1,10 @@
 import { withAuthenticator } from "@aws-amplify/ui-react";
 import { DataStore } from "@aws-amplify/datastore";
-import { Todo } from "./models";
+import { Category, Todo } from "./models";
 import { useEffect, useMemo, useState } from "react";
 import TodoModal from "./components/TodoModal";
 import TodoItem from "./components/TodoItem";
-import StatusFilter from "./components/StatusFilter";
+import Filter from "./components/Filter";
 
 const todoStatus = [
   {
@@ -19,7 +19,9 @@ const todoStatus = [
 
 function App() {
   const [todos, setTodos] = useState<Array<Todo>>([]);
-  const [status, setStatus] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Array<Category>>([]);
+  const [statusFilter, setStatusFilter] = useState<string[]>([]);
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -27,8 +29,11 @@ function App() {
     DataStore.query(Todo).then((todos) => {
       setTodos(todos);
     });
+    DataStore.query(Category).then((categories) => {
+      setCategories(categories);
+    });
 
-    const subscription = DataStore.observe(Todo).subscribe({
+    const todoSubscription = DataStore.observe(Todo).subscribe({
       next: async () => {
         const newTodos = await DataStore.query(Todo);
 
@@ -39,14 +44,31 @@ function App() {
       },
     });
 
-    return () => subscription.unsubscribe();
+    const categorySubscription = DataStore.observe(Category).subscribe({
+      next: async () => {
+        const newCategories = await DataStore.query(Category);
+
+        setCategories(newCategories);
+      },
+    });
+
+    return () => {
+      todoSubscription.unsubscribe();
+      categorySubscription.unsubscribe();
+    };
   }, []);
 
   const todoItems = useMemo(() => {
     return todos
-      .filter((item) => status.includes(item.status) || !status.length)
+      .filter(
+        (item) =>
+          (statusFilter.includes(item.status) || !statusFilter.length) &&
+          ((item.todoCategoryId && categoryFilter.includes(item.todoCategoryId)) ||
+            !categoryFilter.length ||
+            (!item.todoCategoryId && categoryFilter.length === categories.length))
+      )
       .map((item) => <TodoItem item={item} key={item.id} />);
-  }, [todos, status]);
+  }, [todos, statusFilter, categoryFilter]);
 
   return (
     <div className="w-screen flex flex-row justify-center">
@@ -64,9 +86,16 @@ function App() {
 
         <div className="flex flex-row w-full mt-8">
           <div className="w-40 border border-gray-400 rounded-md mr-8 p-4 flex flex-col">
-            <h1 className="text-lg font-semibold text-green-600">Filter</h1>
+            <h1 className="text-lg font-semibold text-green-800">Filter</h1>
 
-            <StatusFilter items={todoStatus} selected={status} onChange={setStatus} />
+            <Filter name="Status" items={todoStatus} selected={statusFilter} onChange={setStatusFilter} />
+
+            <Filter
+              name="Category"
+              items={categories.map(({ id, name }) => ({ label: name, name: id }))}
+              selected={categoryFilter}
+              onChange={setCategoryFilter}
+            />
           </div>
           <div className="flex flex-1">
             <ul className="w-full">{todoItems}</ul>
@@ -74,7 +103,7 @@ function App() {
         </div>
       </div>
 
-      <TodoModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <TodoModal open={modalOpen} onClose={() => setModalOpen(false)} categories={categories} />
     </div>
   );
 }

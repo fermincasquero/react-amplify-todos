@@ -2,12 +2,21 @@ import TrashIcon from "@heroicons/react/24/solid/TrashIcon";
 import { DataStore } from "@aws-amplify/datastore";
 import { Todo } from "../models";
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 
 interface IProps {
   item: Todo;
 }
 
 const TodoItem: React.FC<IProps> = ({ item }) => {
+  const [categoryName, setCategoryName] = useState("");
+
+  useEffect(() => {
+    item.category.then((category) => {
+      setCategoryName(category?.name || "");
+    });
+  }, []);
+
   const handleDelete = async () => {
     try {
       await DataStore.delete(Todo, item.id);
@@ -29,14 +38,20 @@ const TodoItem: React.FC<IProps> = ({ item }) => {
   };
 
   return (
-    <li key={item.id} className="flex flex-wrap items-center w-full  gap-x-6 gap-y-4 py-5 sm:flex-nowrap border-b border-gray-100">
+    <li
+      key={item.id}
+      className="flex flex-wrap items-center w-full  gap-x-6 gap-y-4 py-5 sm:flex-nowrap border-b border-gray-100"
+    >
       <div className="flex flex-1 flex-col">
         <p
           className={classNames("text-sm font-semibold leading-6 text-gray-900", {
-            "line-through": item.status === "FINISHED",
+            "line-through text-gray-500": item.status === "FINISHED",
           })}
         >
           {item.name}
+          {categoryName && (
+            <span className="rounded-full bg-blue-500 text-white px-1 py-px text-[10px] ml-1">{categoryName}</span>
+          )}
         </p>
         <p className="text-sm text-gray-600">{item.description}</p>
       </div>
