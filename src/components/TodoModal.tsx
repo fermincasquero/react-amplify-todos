@@ -18,7 +18,7 @@ const TodoModal: React.FC<Props> = ({ open, onClose }) => {
     e.stopPropagation();
 
     try {
-      const newTodo = await DataStore.save(new Todo({ name, description, status: "unfinished" }));
+      const newTodo = await DataStore.save(new Todo({ name, description, status: "UNFINISHED" }));
 
       if (newTodo) {
         setName("");

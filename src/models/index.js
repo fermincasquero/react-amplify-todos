@@ -1,7 +1,16 @@
 // @ts-check
-import { initSchema } from "@aws-amplify/datastore";
-import { schema } from "./schema";
+import { initSchema } from '@aws-amplify/datastore';
+import { schema } from './schema';
 
-const { Todo } = initSchema(schema);
+const Status = {
+  "FINISHED": "FINISHED",
+  "UNFINISHED": "UNFINISHED"
+};
 
-export { Todo };
+const { Todo, Category } = initSchema(schema);
+
+export {
+  Todo,
+  Category,
+  Status
+};
