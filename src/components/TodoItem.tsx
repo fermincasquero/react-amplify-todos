@@ -43,22 +43,27 @@ const TodoItem: React.FC<IProps> = ({ item }) => {
       className="flex flex-wrap items-center w-full  gap-x-6 gap-y-4 py-5 sm:flex-nowrap border-b border-gray-100"
     >
       <div className="flex flex-1 flex-col">
-        <p
-          className={classNames("text-sm font-semibold leading-6 text-gray-900", {
-            "line-through text-gray-500": item.status === "FINISHED",
-          })}
-        >
-          {item.name}
+        <div className="flex items-center">
+          <p
+            className={classNames("text-sm font-semibold leading-6 text-gray-900", {
+              "line-through text-gray-500": item.status === "FINISHED",
+            })}
+          >
+            {item.name}
+          </p>
+
           {categoryName && (
-            <span className="rounded-full bg-blue-500 text-white px-1 py-px text-[10px] ml-1">{categoryName}</span>
+            <span className="rounded-full bg-blue-500 text-white px-1 py-px text-[10px] ml-1 h-fit">
+              {categoryName}
+            </span>
           )}
-        </p>
+        </div>
         <p className="text-sm text-gray-600">{item.description}</p>
       </div>
 
       <dl className="flex gap-x-8 sm:w-auto items-center">
         <button
-          className="bg-indigo-600 p-1.5 hover:bg-indigo-500 rounded-md text-sm text-white"
+          className="bg-indigo-600 p-1.5 hover:bg-indigo-500 rounded-md text-xs text-white w-28"
           onClick={handleToggleStatus}
         >
           Mark as {item.status === "FINISHED" ? "Undone" : "Done"}

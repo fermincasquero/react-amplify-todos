@@ -77,7 +77,7 @@ function App() {
           <h1 className="text-3xl font-semibold">Todo List</h1>
 
           <button
-            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-md text-sm"
+            className="text-indigo-600 border border-indigo-500 hover:text-white hover:bg-indigo-600 px-4 py-2 rounded-md text-sm font-bold"
             onClick={() => setModalOpen(true)}
           >
             Add Todo
