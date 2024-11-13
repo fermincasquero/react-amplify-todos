@@ -10,7 +10,7 @@ interface Props {
   categories: Category[];
 }
 
-const TodoModal: React.FC<Props> = ({ open, onClose, categories }) => {
+const TodosModal: React.FC<Props> = ({ open, onClose, categories }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<string>("");
@@ -161,4 +161,4 @@ const TodoModal: React.FC<Props> = ({ open, onClose, categories }) => {
   );
 };
 
-export default TodoModal;
+export default TodosModal;
